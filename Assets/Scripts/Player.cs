@@ -5,9 +5,13 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     Rigidbody2D _rb;
-    public float speed = 10f;
+    public float speed = 3f;
     float maxVel = 5f;
     SpriteRenderer sprite;
+
+    private int scoreValue = 0;
+
+    private int lifeValue = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -42,4 +46,28 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.tag == "Gate")
+        {
+            scoreValue += 1;
+            transform.position = new Vector3(50.0f, 0.0f, 0.0f);
+
+        }
+
+        if (scoreValue >= 2)
+        {
+            Destroy(this);
+        }
+
+        if (collision.collider.tag == "Enemy")
+        {
+            lifeValue -= 1;
+        }
+
+        if (lifeValue <= 0)
+        {
+            Destroy(this);
+        }
+    }
 }
