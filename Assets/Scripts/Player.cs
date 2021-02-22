@@ -4,46 +4,42 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    Rigidbody2D _rb;
+    public float speed = 10f;
+    float maxVel = 5f;
+    SpriteRenderer sprite;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        _rb = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        var xdiff = Input.GetAxis("Horizontal") * Time.deltaTime * speed;
+
+        if (Mathf.Abs(_rb.velocity.x) > maxVel)
+         {
+             var temp = _rb.velocity;
+             temp.x = maxVel * Mathf.Sign(xdiff);
+             _rb.velocity = temp;
+             return;
+         }
+
+         _rb.AddForce(Vector2.right * xdiff, ForceMode2D.Impulse);
+
         
-    }
+        if (Input.GetButtonDown("Jump"))
+        {
+            sprite.flipY = !sprite.flipY;
 
-    void FixedUpdate()
-    {
-        float hozMovement = Input.GetAxis("Horizontal");
-        float vertMovement = Input.GetAxis("Vertical");
-        rd2d.AddForce(new Vector2(hozMovement * speed, vertMovement * speed));
-        if (facingRight == false && hozMovement > 0)
-        {
-            Flip();
-        }
-        else if (facingRight == true && hozMovement < 0)
-        {
-            Flip();
+            var tmp = Physics2D.gravity;
+            tmp.y *= -1;
+            Physics2D.gravity = tmp;
         }
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (Input.GetKey(KeyCode.W))
-            {
-                rd2d.AddForce(new Vector2(0, 3), ForceMode2D.Impulse);
-            }
-    }
-
-    void Flip()
-    {
-        facingRight = !facingRight;
-        Vector2 Scaler = transform.localScale;
-        Scaler.x = Scaler.x * -1;
-        transform.localScale = Scaler;
-    }
 }
